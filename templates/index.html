@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phục hồi ảnh cũ</title>
+    <!-- Thêm liên kết đến Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        /* Tùy chỉnh thêm nếu cần */
+        #result {
+            margin-top: 20px;
+        }
+
+        .preview-image {
+            max-width: 200px;
+            margin: 5px;
+        }
+
+        .result-images img {
+            max-width: 200px;
+            margin: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container mt-5">
+        <h1 class="text-center">Phục hồi ảnh cũ</h1>
+
+        <!-- Form Upload -->
+        <form action="/upload" method="post" enctype="multipart/form-data" id="uploadForm">
+            <div class="mb-3">
+                <label for="image" class="form-label">Chọn ảnh:</label>
+                <input type="file" name="image" id="image" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary">Gửi đi</button>
+            </div>
+        </form>
+
+        <!-- Preview Image -->
+        <div id="imagePreview" class="mb-3 text-center">
+            <p><strong>Ảnh xem trước:</strong></p>
+            <img id="preview" src="" alt="Preview" class="preview-image d-none" />
+        </div>
+
+        <!-- Kết quả trả về -->
+        <div id="result" class="result-images row d-flex justify-content-start">
+        </div>
+    </div>
+
+    <script>
+        // Tạo chức năng xem trước ảnh khi người dùng chọn ảnh
+        document.getElementById('image').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                const previewImage = document.getElementById('preview');
+                previewImage.src = event.target.result;
+                previewImage.classList.remove('d-none'); // Hiển thị ảnh xem trước
+            };
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Chức năng gửi ảnh lên server
+        const form = document.getElementById('uploadForm');
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(form);
+            const response = await fetch('/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+            const resultDiv = document.getElementById('result');
+
+            if (result.error) {
+                resultDiv.innerHTML = `<p class="text-danger">Lỗi: ${result.error}</p>`;
+            } else {
+                // Hiển thị ảnh đã tô màu vào cùng dòng
+                const img = document.createElement('img');
+                img.src = result.image;
+                img.alt = "Hình phục hồi";
+                img.classList.add('preview-image');
+
+                // Thêm ảnh vào kết quả
+                resultDiv.appendChild(img);
+            }
+        };
+    </script>
+
+    <!-- Thêm liên kết đến Bootstrap JS (cần cho các tính năng động của Bootstrap) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

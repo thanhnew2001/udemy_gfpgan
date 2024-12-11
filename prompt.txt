@@ -1,0 +1,15 @@
+Tôi cần tạo 1 ứng dụng web sử dụng Flask api, template cho index.html. Ứng dụng cho phép người dùng upload 1 tấm hình. Hệ thống sẽ gọi API của  replicate để tô màu và trả về tấm hình mới. Lưu tấm hình này với tên duy nhất trên backend trong thư mục static/output và trả về đường dẫn hình.
+Đây là cách gọi api replicate:
+import replicate
+
+input = {
+    "image": "https://replicate.delivery/pbxt/KDMkjS4SpsGieAxMdkBUNWT5zFI8BvAU4XjiyI2xmLny3skZ/Buffalo%20Bank%20Buffalo,%20New%20York,%20circa%201908.%20Erie%20County%20Savings%20Bank,%20Niagara%20Street.jpg"
+}
+
+output = replicate.run(
+    "piddnad/ddcolor:ca494ba129e44e45f661d6ece83c4c98a9a7c774309beca01429b58fce8aa695",
+    input=input
+)
+with open("output.png", "wb") as file:
+    file.write(output.read())
+#=> output.png written to disk
